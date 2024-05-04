@@ -15,3 +15,13 @@ of chosen types:
    * in loop creates 10 records with subsequent primary key values and random values in other columns, then modifies three random entries 
   (applies random values)
 3. After each transcation the contents of database have to be displayed 
+
+## cnf.ini
+The missing file ``cnf.ini`` contains the database login information. It has the following contents
+```ini
+[mssqlDB]
+server = 127.0.0.1:port
+db = dbname
+user = username
+pass =  userpass
+```

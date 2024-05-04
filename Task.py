@@ -11,7 +11,7 @@ class Task(object):
         querry = "SELECT * FROM Invoice"
         self.cursor.execute(querry)
         result = self.cursor.fetchall()
-        print("DATABASE: ")
+        print("TABLE: ")
         if len(result) == 0:
             print("{empty}")
         for row in result:
@@ -38,14 +38,14 @@ class Task(object):
     def Task3(self):
         update = self.__getupdatearrays()
         for row in update:
-            querry = "UPDATE Invoice SET net = " + str(row[1]) + ", " "gross = " + str(row[2]) + " WHERE invoice_id = " + str(row[0])
+            querry = "UPDATE Invoice SET gross = " + str(row[1]) + " WHERE invoice_id = " + str(row[0])
             self.cursor.execute(querry)
         
         querry = "INSERT INTO Invoice (invoice_id, net, gross) VALUES (4, '1000.00', '1230.00')"
         self.cursor.execute(querry)
         
         cnx_mssql.commit()
-        print("\nlog: doubled the amounts, added 1 entry")
+        print("\nlog: doubled the gross amounts, added 1 entry")
         self.Print()
 
     def Task4(self):
@@ -61,6 +61,29 @@ class Task(object):
         print("\nlog: added 10 entries")
         self.Print()
 
+        random = self.__getrandom(3, 14)
+        for item in random:
+            net = Decimal(randint(0, 10000), randint(0, 99))
+            gross = Decimal(randint(0, 10000), randint(0, 99))
+            account = gen.Generate()
+            querry = "UPDATE Invoice SET net = " + str(net) + ", gross = " + str(gross) + ", account = " + account + " WHERE invoice_id = " + str(item)
+            self.cursor.execute(querry)
+
+        cnx_mssql.commit()
+        print("\nlog: modified 3 random entries")
+        self.Print()
+
+    def __getrandom(self, n: int, max: int):
+        if not isinstance(n, int) or n < 1 or not isinstance(max, int) or n > max:
+            raise ValueError
+        res = []
+        for i in range(1, n + 1):
+            rand = randint(1, max)
+            while(rand in res):
+                rand = randint(1, max)
+            res.append(rand)
+        return res
+
     def __getupdatearrays(self):
         querry = "SELECT * FROM Invoice"
         self.cursor.execute(querry)
@@ -75,7 +98,6 @@ class Task(object):
 
             updaterow = []
             updaterow.append(fields[0])
-            updaterow.append(Decimal(fields[1]) * 2)
             updaterow.append(Decimal(fields[2]) * 2)
             update.append(updaterow)
         return update
