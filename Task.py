@@ -1,7 +1,7 @@
 from db_connection import cnx_mssql
-from Decimal import *
-from AccountGen import *
+from accountgen import *
 from random import randint
+from decimal import Decimal
 
 class Task(object):
     def __init__(self):
@@ -26,9 +26,9 @@ class Task(object):
         self.Print()
 
     def Task2(self):
-        netlist = {Decimal(100), Decimal(200), Decimal(300)}
+        netlist = {Decimal (100), Decimal(200), Decimal(300)}
         for i, net in zip(range(1, 4), netlist):
-            gross = net * 1.23
+            gross = net * Decimal('1.23')
             self.cursor.execute("INSERT INTO Invoice (invoice_id, net, gross) VALUES (" + str(i) + ", " + str(net) + ", " + str(gross) + ')')
 
         cnx_mssql.commit()
@@ -51,8 +51,8 @@ class Task(object):
     def Task4(self):
         gen = AccountGen()
         for i in range(5, 14):
-            net = Decimal(randint(0, 10000), randint(0, 99))
-            gross = Decimal(randint(0, 10000), randint(0, 99))
+            net = Decimal(str(randint(0, 10000)) + '.' + str(randint(0, 99)))
+            gross = Decimal(str(randint(0, 10000)) + '.' + str(randint(0, 99)))
             account = gen.Generate()
             querry = "INSERT INTO Invoice VALUES(" + str(i) + ", " +  str(net) + ", " + str(gross) + ", " + account + ")"
             self.cursor.execute(querry)
@@ -63,8 +63,8 @@ class Task(object):
 
         random = self.__getrandom(3, 14)
         for item in random:
-            net = Decimal(randint(0, 10000), randint(0, 99))
-            gross = Decimal(randint(0, 10000), randint(0, 99))
+            net = Decimal(str(randint(0, 10000)) + '.' + str(randint(0, 99)))
+            gross = Decimal(str(randint(0, 10000)) + '.' + str(randint(0, 99)))
             account = gen.Generate()
             querry = "UPDATE Invoice SET net = " + str(net) + ", gross = " + str(gross) + ", account = " + account + " WHERE invoice_id = " + str(item)
             self.cursor.execute(querry)
@@ -90,15 +90,9 @@ class Task(object):
         rows = self.cursor.fetchall()
         update = []
         for row in rows:
-            rowstr = str(row)
-            rowstr = rowstr[1:]
-            rowstr = rowstr[:-1]
-            rowstr = rowstr.replace(' ', '')
-            fields = rowstr.split(',')
-
             updaterow = []
-            updaterow.append(fields[0])
-            updaterow.append(Decimal(fields[2]) * 2)
+            updaterow.append(row[0])
+            updaterow.append(row[2] * Decimal('2'))
             update.append(updaterow)
         return update
 
